@@ -133,16 +133,11 @@ int main(void)
 		LOG('\n');
 	}
 
-	float positions[12] = {
+	float positions[] = {
 		// Triangle 1
 		-0.5f, -0.5f, // Bottom Left
 		 0.5f, -0.5f, // Bottom Right
 		 0.5f,  0.5f, // Top Right
-
-		// Triangle 2
-		 0.5f,  0.5f, // Top Right
-		-0.5f,  0.5f, // Top Left
-		-0.5f, -0.5f  // Bottom Left
 	};
 
 	/* Buffers */
@@ -165,7 +160,7 @@ int main(void)
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
