@@ -21,6 +21,9 @@
     <ClCompile Include="src\shaderManager\shaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameConfig\GameConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\shaders\basic.shader" />

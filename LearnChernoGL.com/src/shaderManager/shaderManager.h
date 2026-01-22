@@ -8,6 +8,8 @@
 #include <sstream>
 #include <fstream>
 
+#include "../GameConfig/GameConfig.h"
+
 struct ShaderProgramSource
 {
 	std::string VertexSource;

@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameConfig\GameConfig.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\shaderManager\shaderManager.cpp" />
   </ItemGroup>
