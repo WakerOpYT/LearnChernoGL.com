@@ -8,11 +8,10 @@
 
 
 /* LOG Macro */
-#ifdef MODE_DEBUG
+#ifdef _DEBUG
 	#define LOG(x) std::cout << x
 #else
 	#define LOG(x)
-	#define LOG_RELEASE(x) std::cout << x
 #endif
 
 
@@ -133,25 +132,34 @@ int main(void)
 		LOG('\n');
 	}
 
-	float positions[12] = {
-		// Triangle 1
-		-0.5f, -0.5f, // Bottom Left
-		 0.5f, -0.5f, // Bottom Right
-		 0.5f,  0.5f, // Top Right
+	float positions[] = {
+		-0.5f, -0.5f, // 0 - Bottom Left
+		 0.5f, -0.5f, // 1 - Bottom Right
+		 0.5f,  0.5f, // 2 - Top Right
+		-0.5f,  0.5f, // 3 - Top Left
+	};
 
-		// Triangle 2
-		 0.5f,  0.5f, // Top Right
-		-0.5f,  0.5f, // Top Left
-		-0.5f, -0.5f  // Bottom Left
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
 	};
 
 	/* Buffers */
+	// VBO
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0);
+
+	// IBO
+	unsigned int ibo;
+	glGenBuffers(1, &ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 	
 	/* Shaders */
 	ShaderProgramSource source = ParseShader("res/shaders/basic.shader");
@@ -165,7 +173,7 @@ int main(void)
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
