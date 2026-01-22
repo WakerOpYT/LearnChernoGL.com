@@ -1,8 +1,3 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <string>
-#include <sstream>
-#include <fstream>
 #include "shaderManager.h"
 
 ShaderProgramSource ParseShader(const std::string& filePath)
@@ -52,10 +47,11 @@ unsigned int CompileShader(unsigned int type, const std::string& source)
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char* message = (char*)alloca(length * sizeof(char));
 		glGetShaderInfoLog(id, length, &length, message);
-		LOG("Failed to compile ");
+		/*LOG("Failed to compile ");
 		LOG((type == GL_VERTEX_SHADER ? "vertex shader!\n" : "fragment shader!\n"));
 		LOG(message);
-		LOG('\n');
+		LOG('\n');*/
+		std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex shader!" : "fragment shader!") << std::endl;
 		glDeleteShader(id);
 		return 0;
 	}

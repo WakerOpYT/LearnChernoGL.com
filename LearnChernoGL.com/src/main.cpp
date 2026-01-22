@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 
 #include "GameConfig/GameConfig.h"
 #include "shaderManager/shaderManager.h"
@@ -20,7 +21,7 @@ void processInput(GLFWwindow* window)
 
 int main(void)
 {
-	LOG("Starting game...\n");
+	std::cout << "Starting game..." << std::endl;
 	GLFWwindow* window;
 
 	/* Window stuff */
@@ -38,11 +39,10 @@ int main(void)
 
 		/* GLEW */
 		if (glewInit() != GLEW_OK)
-			LOG("ERROR!\n");
+			std::cout << "ERROR!" << std::endl;
 
 		/* Other */
-		LOG(glGetString(GL_VERSION));
-		LOG('\n');
+		std::cout << glGetString(GL_VERSION) << std::endl;
 	}
 
 	float positions[] = {
@@ -84,9 +84,12 @@ int main(void)
 	{
 		processInput(window);
 
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
