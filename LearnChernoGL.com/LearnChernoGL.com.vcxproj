@@ -146,9 +146,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\shaderManager\shaderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\shaders\basic.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\GameConfig\GameConfig.h" />
+    <ClInclude Include="src\shaderManager\shaderManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
