@@ -103,7 +103,7 @@ int main(void)
 
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));
-			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
+			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 		GLCall(glfwSwapBuffers(window));
 		
 		GLCall(glfwPollEvents());
