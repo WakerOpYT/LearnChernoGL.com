@@ -28,6 +28,11 @@ int main(void)
 		/* GLFW */
 		if (!glfwInit())
 			return -1;
+
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 		window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
 		if (!window)
 		{
@@ -58,6 +63,11 @@ int main(void)
 	};
 
 	/* Buffers */
+	// VAO
+	unsigned int vao;
+	GLCall(glGenVertexArrays(1, &vao));
+	GLCall(glBindVertexArray(vao));
+	
 	// VBO
 	unsigned int buffer;
 	GLCall(glGenBuffers(1, &buffer));
@@ -85,9 +95,18 @@ int main(void)
 	ASSERT(location != -1)
 	GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
 
+	GLCall(glBindVertexArray(0));
+	GLCall(glUseProgram(0));
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
 	/* Game Loop */
 	while (!glfwWindowShouldClose(window))
 	{
+		GLCall(glUseProgram(shader));
+		GLCall(glBindVertexArray(vao));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+
 		processInput(window);
 
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
