@@ -1,5 +1,8 @@
 #include "GameConfig.h"
 
+int width = 640;
+int height = 480;
+
 void GLClearError()
 {
 	while (glGetError() != GL_NO_ERROR);

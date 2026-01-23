@@ -10,23 +10,6 @@
 #include "GameConfig/GameConfig.h"
 #include "shaderManager/shaderManager.h"
 
-
-/* Error handling */
-//void GLClearError()
-//{
-//	while (glGetError() != GL_NO_ERROR);
-//}
-//
-//bool GLLogCall(const char* function, const char* file, int line)
-//{
-//	while (GLenum err = glGetError())
-//	{
-//		std::cout << "[OpenGL Error] (" << err << "): " << function << " " << file << ": " << line << std::endl;
-//		return false;
-//	}
-//	return true;
-//}
-
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -45,13 +28,14 @@ int main(void)
 		/* GLFW */
 		if (!glfwInit())
 			return -1;
-		window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+		window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
 		if (!window)
 		{
 			glfwTerminate();
 			return -1;
 		}
 		glfwMakeContextCurrent(window);
+		glfwSwapInterval(1);
 
 		/* GLEW */
 		if (glewInit() != GLEW_OK)
@@ -80,7 +64,7 @@ int main(void)
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
 	GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW));
 	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0));
+	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0))
 
 	// IBO
 	unsigned int ibo;
@@ -91,15 +75,20 @@ int main(void)
 	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 	
 	/* Shaders */
+	//Shader Setup
 	ShaderProgramSource source = ParseShader("res/shaders/basic.shader");
 	unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
 	GLCall(glUseProgram(shader));
+
+	// Uniforms
+	GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+	ASSERT(location != -1)
+	GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
 
 	/* Game Loop */
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
-
 
 		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));

@@ -5,6 +5,10 @@
 
 #include <iostream>
 
+/* Window stuff */
+extern int width;
+extern int height;
+
 /* OpenGL Error Handling */
 // ASSERT Macro
 #define ASSERT(x) if (!(x)) __debugbreak();
