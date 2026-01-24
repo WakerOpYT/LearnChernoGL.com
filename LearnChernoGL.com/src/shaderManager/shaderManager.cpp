@@ -25,7 +25,8 @@ ShaderProgramSource ParseShader(const std::string& filePath)
 		}
 		else
 		{
-			ss[(int)type] << line << '\n';
+			if (type != ShaderType::NONE)
+				ss[(int)type] << line << '\n';
 		}
 	}
 

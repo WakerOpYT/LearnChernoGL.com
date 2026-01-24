@@ -10,6 +10,11 @@
 #include "GameConfig/GameConfig.h"
 #include "shaderManager/shaderManager.h"
 
+#include "Renderer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+
+
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -29,7 +34,7 @@ int main(void)
 		if (!glfwInit())
 			return -1;
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
@@ -50,6 +55,7 @@ int main(void)
 		std::cout << glGetString(GL_VERSION) << std::endl;
 	}
 
+	{
 	float positions[] = {
 		-0.5f, -0.5f, // 0 - Bottom Left
 		 0.5f, -0.5f, // 1 - Bottom Right
@@ -69,20 +75,12 @@ int main(void)
 	GLCall(glBindVertexArray(vao));
 	
 	// VBO
-	unsigned int buffer;
-	GLCall(glGenBuffers(1, &buffer));
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW));
-	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2, 0))
-
-	// IBO
-	unsigned int ibo;
-	GLCall(glGenBuffers(1, &ibo));
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW))
+	VertexBuffer vbo(positions, 4 * 2 * sizeof(float));
 	GLCall(glEnableVertexAttribArray(0));
 	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+
+	// IBO
+	IndexBuffer ibo(indices, 6);
 	
 	/* Shaders */
 	//Shader Setup
@@ -91,21 +89,30 @@ int main(void)
 	GLCall(glUseProgram(shader));
 
 	// Uniforms
-	GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+	GLCall(int location = glGetUniformLocation(shader, "u_Rainbow_strength"));
 	ASSERT(location != -1)
-	GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
 
 	GLCall(glBindVertexArray(0));
 	GLCall(glUseProgram(0));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
+	std::cout << location;
+
+	float strength = 0.5;
+	float increment = 0.1;
+
 	/* Game Loop */
 	while (!glfwWindowShouldClose(window))
 	{
+		strength += increment;
+		if (strength >= 1.0f || strength <= 0.0f)
+			increment *= -1;
+
 		GLCall(glUseProgram(shader));
+		glUniform1f(location, strength);
 		GLCall(glBindVertexArray(vao));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+		ibo.Bind();
 
 		processInput(window);
 
@@ -113,12 +120,12 @@ int main(void)
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));
 			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 		GLCall(glfwSwapBuffers(window));
-		
 		GLCall(glfwPollEvents());
 	}
 
 	/* Termination */
 	GLCall(glDeleteProgram(shader));
+	}
 	glfwTerminate();
 	return 0;
 }

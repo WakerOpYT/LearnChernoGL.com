@@ -3,10 +3,13 @@
 
 layout(location = 0) in vec4 position;
 
+out vec4 vertex_color;
+
 void main()
 {
 	gl_Position = position;
-};
+	vertex_color = position;
+}
 
 
 
@@ -15,9 +18,12 @@ void main()
 
 layout(location = 0) out vec4 color;
 
-uniform vec4 u_Color;
+uniform float u_Rainbow_strength;
+
+in vec4 vertex_color;
 
 void main()
 {
-	color = u_Color;
-};
+	vec3 baseColor = vertex_color.rgb + 0.5;
+	color = vec4(baseColor.rg * u_Rainbow_strength, u_Rainbow_strength, 1.0);
+}
