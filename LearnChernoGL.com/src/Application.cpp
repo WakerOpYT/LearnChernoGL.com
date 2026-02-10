@@ -3,129 +3,109 @@
 
 #include <iostream>
 #include <string>
-#include <sstream>
-#include <fstream>
-#include <iomanip>
 
 #include "GameConfig/GameConfig.h"
-#include "shaderManager/shaderManager.h"
+#include "shaderManager/Shader.h"
 
-#include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "Renderer.h"
 
 
 void processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(window, true);
-	}
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
 }
 
 int main(void)
 {
-	std::cout << "Starting game..." << std::endl;
-	GLFWwindow* window;
+    std::cout << "Starting game..." << std::endl;
+    GLFWwindow* window;
 
-	/* Window stuff */
-	{
-		/* GLFW */
-		if (!glfwInit())
-			return -1;
+    /* Window stuff */
+    {
+        /* GLFW */
+        if (!glfwInit())
+            return -1;
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
-		if (!window)
-		{
-			glfwTerminate();
-			return -1;
-		}
-		glfwMakeContextCurrent(window);
-		glfwSwapInterval(1);
+        window = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+        if (!window)
+        {
+            glfwTerminate();
+            return -1;
+        }
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);
 
-		/* GLEW */
-		if (glewInit() != GLEW_OK)
-			std::cout << "ERROR!" << std::endl;
+        /* GLEW */
+        if (glewInit() != GLEW_OK)
+            std::cout << "ERROR!" << std::endl;
 
-		/* Other */
-		std::cout << glGetString(GL_VERSION) << std::endl;
-	}
+        /* Other */
+        std::cout << glGetString(GL_VERSION) << std::endl;
+    }
 
-	{
-	float positions[] = {
-		-0.5f, -0.5f, // 0 - Bottom Left
-		 0.5f, -0.5f, // 1 - Bottom Right
-		 0.5f,  0.5f, // 2 - Top Right
-		-0.5f,  0.5f, // 3 - Top Left
-	};
+    {
+    float vertices[] = {
+        -0.5f, -0.5f, // 0 - Bottom Left
+         0.5f, -0.5f, // 1 - Bottom Right
+         0.5f,  0.5f, // 2 - Top Right
+        -0.5f,  0.5f, // 3 - Top Left
+    };
 
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
 
-	/* Buffers */
-	// VAO
-	unsigned int vao;
-	GLCall(glGenVertexArrays(1, &vao));
-	GLCall(glBindVertexArray(vao));
-	
-	// VBO
-	VertexBuffer vbo(positions, 4 * 2 * sizeof(float));
-	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+    /* Buffers */   
+    // VBO & VAO
+    VertexBuffer vbo(vertices, 4 * 2 * sizeof(float));
+    VertexArray vao;
+    VertexBufferLayout layout;
+    layout.Push<float>(2);
+    vao.AddBuffer(vbo, layout);
 
-	// IBO
-	IndexBuffer ibo(indices, 6);
-	
-	/* Shaders */
-	//Shader Setup
-	ShaderProgramSource source = ParseShader("res/shaders/basic.shader");
-	unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-	GLCall(glUseProgram(shader));
+    // IBO
+    IndexBuffer ibo(indices, 6);
+    
 
-	// Uniforms
-	GLCall(int location = glGetUniformLocation(shader, "u_Rainbow_strength"));
-	ASSERT(location != -1)
+    /* Shaders */
+    ShaderProgramSource source = ParseShaderFromFiles("res/shaders/vert-basic.shader", "res/shaders/frag-basic.shader");
+    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+    GLCall(glUseProgram(shader));
 
-	GLCall(glBindVertexArray(0));
-	GLCall(glUseProgram(0));
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
-	std::cout << location;
+    /* Game Loop (Preparation) */
+    GLCall(glBindVertexArray(0));
+    GLCall(glUseProgram(0));
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 
-	float strength = 0.5;
-	float increment = 0.1;
+    /* Game Loop */
+    while (!glfwWindowShouldClose(window))
+    {
+        GLCall(glUseProgram(shader));
+        vao.Bind();
+        ibo.Bind();
 
-	/* Game Loop */
-	while (!glfwWindowShouldClose(window))
-	{
-		strength += increment;
-		if (strength >= 1.0f || strength <= 0.0f)
-			increment *= -1;
+        processInput(window);
 
-		GLCall(glUseProgram(shader));
-		glUniform1f(location, strength);
-		GLCall(glBindVertexArray(vao));
-		ibo.Bind();
+        GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+        GLCall(glClear(GL_COLOR_BUFFER_BIT));
+            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+        GLCall(glfwSwapBuffers(window));
+        GLCall(glfwPollEvents());
+    }
 
-		processInput(window);
-
-		GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
-		GLCall(glClear(GL_COLOR_BUFFER_BIT));
-			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
-		GLCall(glfwSwapBuffers(window));
-		GLCall(glfwPollEvents());
-	}
-
-	/* Termination */
-	GLCall(glDeleteProgram(shader));
-	}
-	glfwTerminate();
-	return 0;
+    /* Termination */
+    GLCall(glDeleteProgram(shader));
+    }
+    glfwTerminate();
+    return 0;
 }

@@ -145,22 +145,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\shaderManager\Shader.cpp" />
     <ClCompile Include="src\GameConfig\GameConfig.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\shaderManager\shaderManager.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\VertexArray.cpp" />
+    <ClCompile Include="src\VertexBufferLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\shaders\basic.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\shaderManager\Shader.h" />
     <ClInclude Include="src\GameConfig\GameConfig.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Renderer.h" />
-    <ClInclude Include="src\shaderManager\shaderManager.h" />
     <ClInclude Include="src\VertexBuffer.h" />
+    <ClInclude Include="src\VertexArray.h" />
+    <ClInclude Include="src\VertexBufferLayout.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\frag-basic.shader" />
+    <None Include="res\shaders\vert-basic.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
